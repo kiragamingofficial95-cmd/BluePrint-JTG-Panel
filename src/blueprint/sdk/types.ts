@@ -1,0 +1,17 @@
+export type {
+  BlueprintManifest,
+  ExtensionAuthor,
+  ExtensionCompatibility,
+  ExtensionConfigField,
+  ExtensionConfigSchema,
+  ExtensionNavItem,
+  ExtensionRoutes,
+  ExtensionStatus,
+  InstalledExtension,
+  PermissionScope,
+  PermissionDefinition,
+  ExtensionContext,
+  IBlueprintExtension,
+  DoctorReport,
+  DoctorIssue,
+} from "../../server/blueprint/types.js";
