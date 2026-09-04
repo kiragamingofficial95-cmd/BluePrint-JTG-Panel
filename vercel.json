@@ -1,6 +1,5 @@
 {
-  "buildCommand": "npx vite build",
+  "buildCommand": "mkdir -p dist && cp blueprint-site/index.html dist/index.html && cp -r public/* dist/ 2>/dev/null || true",
   "outputDirectory": "dist",
-  "framework": "vite",
-  "regions": ["iad1"]
+  "framework": null
 }
