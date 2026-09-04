@@ -261,7 +261,7 @@
 
     function escapeHtml(str) {
       if (!str) return '';
-      return String(str).replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"',"'":'''}[c]));
+      return String(str).replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"',"'":'"'}[c]));
     }
 
     searchInput.addEventListener('input', () => {
