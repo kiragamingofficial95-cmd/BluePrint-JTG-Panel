@@ -1,0 +1,26 @@
+node_modules/
+dist/
+build/
+coverage/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+.data/
+backups/
+.backup/
+BluePrint/node_modules/
+BluePrint/dist/
+*.blueprint
+
+
+# Temporary works files
+works/temporary/*
+!works/temporary/.gitkeep
+
+# BluePrint now lives in separate BluePrint-JTG-Panel repo
+BluePrint/
+DEPLOYMENT.md
+deploy.bat
+UPDATE-GUIDE.md

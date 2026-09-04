@@ -1,0 +1,75 @@
+{
+  "$schema": "https://blueprint.jtgpanel.com/schema/v1.json",
+  "id": "hello-jtg",
+  "name": "Hello JTG",
+  "version": "1.0.0",
+  "description": "Official example extension demonstrating the JTG Blueprint lifecycle, backend API routing, database migrations, configuration, and UI integration.",
+  "author": {
+    "name": "JTG Core Team",
+    "email": "team@jtgpanel.com",
+    "url": "https://github.com/kiragamingofficial95-cmd"
+  },
+  "icon": "Sparkles",
+  "category": "utilities",
+  "tags": ["example", "demo", "starter", "blueprint"],
+  "homepage": "https://blueprint.jtgpanel.com/extensions/hello-jtg",
+  "repository": "https://github.com/kiragamingofficial95-cmd/JTG-PANEL-UPGRADATION-CREDITS-TO-KIRA-GAMING",
+  "license": "MIT",
+  "compatibility": {
+    "jtg_panel": ">=2.0.0",
+    "blueprint": ">=1.0.0"
+  },
+  "dependencies": {},
+  "permissions": [
+    "servers.read",
+    "settings.read"
+  ],
+  "entrypoints": {
+    "backend": "src/server/index.js",
+    "frontend": "src/client/index.js"
+  },
+  "routes": {
+    "apiPrefix": "/api/extensions/hello-jtg",
+    "adminPage": {
+      "path": "/admin/extensions/hello-jtg",
+      "title": "Hello JTG",
+      "icon": "Sparkles"
+    },
+    "navItems": [
+      {
+        "title": "Hello JTG",
+        "path": "/admin/extensions/hello-jtg",
+        "icon": "Sparkles",
+        "section": "admin"
+      }
+    ]
+  },
+  "configSchema": {
+    "fields": [
+      {
+        "key": "greetingMessage",
+        "label": "Custom Greeting Message",
+        "type": "string",
+        "default": "Welcome to JTG Panel powered by Blueprint!",
+        "description": "The message displayed on the dashboard banner.",
+        "required": true
+      },
+      {
+        "key": "enablePublicWidget",
+        "label": "Enable Public Widget",
+        "type": "boolean",
+        "default": true,
+        "description": "Whether to expose the hello banner widget to panel users."
+      },
+      {
+        "key": "alertThreshold",
+        "label": "Alert Threshold Limit",
+        "type": "number",
+        "default": 10,
+        "min": 1,
+        "max": 100,
+        "description": "Maximum number of event notifications retained."
+      }
+    ]
+  }
+}
