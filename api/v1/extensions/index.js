@@ -1,6 +1,6 @@
 // GET /api/v1/extensions
 // Returns the list of published extensions for the registry site.
-import { getPublicExtensionList } from "../_lib/catalog.js";
+import { getPublicExtensionList } from "../../_lib/catalog.js";
 
 export default function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");

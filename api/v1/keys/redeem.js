@@ -3,7 +3,7 @@
 // This is called by the JTG Panel after validating a key.
 // Expected request: { key: "jtg_key_..." }
 // Expected response: { packageUrl, sha256, expires }
-import { redeemKey } from "../_lib/keys.js";
+import { redeemKey } from "../../_lib/keys.js";
 
 export default function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");

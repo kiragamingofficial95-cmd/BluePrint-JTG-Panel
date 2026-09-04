@@ -1,6 +1,6 @@
 // GET /api/v1/extensions/[id]
 // Returns detailed info for a single extension.
-import { getPublicExtensionDetail } from "../_lib/catalog.js";
+import { getPublicExtensionDetail } from "../../_lib/catalog.js";
 
 export default function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");

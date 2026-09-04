@@ -1,8 +1,8 @@
 // POST /api/v1/keys/generate
 // Issues a one-time install key for an extension. This is what the "Get Extension Key"
 // button on the registry site calls. Returns { key }.
-import { generateKey } from "../_lib/keys.js";
-import { findExtension } from "../_lib/catalog.js";
+import { generateKey } from "../../_lib/keys.js";
+import { findExtension } from "../../_lib/catalog.js";
 
 export default function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
