@@ -4,7 +4,7 @@
 // Expected request: { key: "jtg_key_..." }
 // Expected response (matching the panel's RegistryClient expectations):
 //   { valid: true, key, extensionId, extensionName, version, description, author, ... }
-import { validateKey } from "../../_lib/keys.js";
+import { validateKey, resolvePackageOrigin } from "../../_lib/keys.js";
 
 export default function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -27,7 +27,7 @@ export default function handler(req, res) {
     return;
   }
 
-  const result = validateKey(key);
+  const result = validateKey(key, resolvePackageOrigin(req));
   if (result.valid) {
     res.status(200).json(result);
   } else {

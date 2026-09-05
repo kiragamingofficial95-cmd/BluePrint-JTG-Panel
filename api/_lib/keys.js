@@ -50,9 +50,30 @@ export function parseKey(key) {
 }
 
 /**
+ * Resolve the canonical HTTPS origin for package downloads from the incoming
+ * request. VERCEL_URL is a deployment-specific hostname (e.g.
+ * blue-print-jtg-panel-<hash>.vercel.app) that can serve the SPA fallback
+ * (HTML) instead of static files, which breaks zip downloads. Using the
+ * request's own host guarantees the package is served from the same origin
+ * the client successfully reached.
+ */
+export function resolvePackageOrigin(req) {
+  const proto =
+    (req.headers["x-forwarded-proto"] || "https").split(",")[0].trim() ||
+    "https";
+  const host =
+    req.headers["x-forwarded-host"] ||
+    req.headers["x-forwarded-server"] ||
+    req.headers.host ||
+    process.env.VERCEL_URL ||
+    "blue-print-jtg-panel.vercel.app";
+  return `${proto}://${host}`.replace(/\/+$/, "");
+}
+
+/**
  * Validate an extension key and return the extension preview.
  */
-export function validateKey(key) {
+export function validateKey(key, origin) {
   const parsed = parseKey(key);
   if (!parsed) {
     return { valid: false, error: "Invalid extension key format." };
@@ -85,7 +106,7 @@ export function validateKey(key) {
     icon: ext.icon,
     compatibility: ext.compatibility,
     permissions: ext.permissions || [],
-    packageUrl: `https://${process.env.VERCEL_URL || "blue-print-jtg-panel.vercel.app"}/${ext.packageFile}`,
+    packageUrl: `${origin || resolvePackageOrigin({ headers: {} })}/${ext.packageFile}`,
     checksum: "", // computed at redeem time if needed
   };
 }
@@ -95,7 +116,7 @@ export function validateKey(key) {
  * Returns { packageUrl, sha256, extension } for JSON consumers,
  * or the raw zip when asBuffer is true.
  */
-export function redeemKey(key, asBuffer = false) {
+export function redeemKey(key, asBuffer = false, origin) {
   const parsed = parseKey(key);
   if (!parsed) {
     const err = new Error("Invalid extension key format.");
@@ -119,7 +140,12 @@ export function redeemKey(key, asBuffer = false) {
   }
 
   // For serverless, we serve the packaged zip from public/packages.
-  const packageUrl = `https://${process.env.VERCEL_URL || "blue-print-jtg-panel.vercel.app"}/${ext.packageFile}`;
+  // Note: do NOT use process.env.VERCEL_URL here — deployment-specific
+  // hostnames serve the SPA HTML fallback for missing static files, which
+  // makes the panel hit "Invalid or unsupported zip format. No END header"
+  // when it tries to open the downloaded file. Always derive the origin from
+  // the request the client actually reached.
+  const packageUrl = `${origin || resolvePackageOrigin({ headers: {} })}/${ext.packageFile}`;
 
   return {
     packageUrl,

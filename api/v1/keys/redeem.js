@@ -3,7 +3,7 @@
 // This is called by the JTG Panel after validating a key.
 // Expected request: { key: "jtg_key_..." }
 // Expected response: { packageUrl, sha256, expires }
-import { redeemKey } from "../../_lib/keys.js";
+import { redeemKey, resolvePackageOrigin } from "../../_lib/keys.js";
 
 export default function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -27,7 +27,7 @@ export default function handler(req, res) {
   }
 
   try {
-    const result = redeemKey(key);
+    const result = redeemKey(key, false, resolvePackageOrigin(req));
     res.status(200).json(result);
   } catch (err) {
     res.status(err.status || 400).json({ error: err.message });

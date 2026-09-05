@@ -175,6 +175,16 @@ export class RegistryClient {
         responseType: "arraybuffer",
         timeout: 30000,
       });
+      const contentType = packageResponse.headers["content-type"] || "";
+      if (!contentType.includes("zip") && !contentType.includes("octet-stream")) {
+        // Registry returned an HTML error page instead of the zip
+        const text = Buffer.from(packageResponse.data).toString("utf8").slice(0, 200);
+        throw new Error(
+          `Registry returned non-zip content (${contentType}). ` +
+            `This usually means the registry's package URL is misconfigured. ` +
+            `Preview: ${text}`
+        );
+      }
       const buffer = Buffer.from(packageResponse.data);
       const checksum = crypto.createHash("sha256").update(buffer).digest("hex");
 
