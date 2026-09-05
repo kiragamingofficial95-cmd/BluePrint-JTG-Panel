@@ -1,10 +1,6 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "mkdir -p dist && cp blueprint-site/index.html dist/index.html && cp -r public/* dist/ 2>/dev/null || true",
   "outputDirectory": "dist",
-  "installCommand": "npm install",
-  "framework": "vite",
-  "regions": ["iad1"],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  "framework": null,
+  "regions": ["iad1"]
 }
