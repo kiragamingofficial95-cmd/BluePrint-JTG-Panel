@@ -65,25 +65,6 @@ interface ExtensionItem {
   errorMessage?: string;
 }
 
-function formatErrorMessage(err: any, fallback = "An error occurred."): string {
-  if (!err) return fallback;
-  if (typeof err === "string") return err;
-  if (err.response?.data) {
-    const d = err.response.data;
-    if (typeof d === "string") return d;
-    if (typeof d.error === "string") return d.error;
-    if (typeof d.error?.message === "string") return d.error.message;
-    if (typeof d.message === "string") return d.message;
-    try {
-      return JSON.stringify(d.error || d);
-    } catch {
-      return fallback;
-    }
-  }
-  if (typeof err.message === "string") return err.message;
-  return fallback;
-}
-
 export function BlueprintExtensionsManager() {
   const [blueprintCore, setBlueprintCore] = useState<any>(null);
   const [extensions, setExtensions] = useState<ExtensionItem[]>([]);
@@ -130,7 +111,7 @@ export function BlueprintExtensionsManager() {
       setErrorMsg(null);
     } catch (err: any) {
       console.error("Failed to fetch blueprint extensions:", err);
-      setErrorMsg(formatErrorMessage(err, "Failed to connect to Blueprint Extension Manager."));
+      setErrorMsg(err.response?.data?.error || "Failed to connect to Blueprint Extension Manager.");
     } finally {
       setLoading(false);
     }
@@ -152,7 +133,7 @@ export function BlueprintExtensionsManager() {
       });
       setKeyPreview(res.data);
     } catch (err: any) {
-      setErrorMsg(formatErrorMessage(err, "Invalid extension key or registry unreachable."));
+      setErrorMsg(err.response?.data?.error || "Invalid extension key or registry unreachable.");
       setKeyPreview(null);
     } finally {
       setIsValidatingKey(false);
@@ -182,7 +163,7 @@ export function BlueprintExtensionsManager() {
       setUploadFile(null);
       await fetchExtensions();
     } catch (err: any) {
-      setErrorMsg(formatErrorMessage(err, "Failed to install extension."));
+      setErrorMsg(err.response?.data?.error || "Failed to install extension.");
     } finally {
       setActionLoading(false);
     }
@@ -202,7 +183,7 @@ export function BlueprintExtensionsManager() {
       await fetchExtensions();
       setOpenMenuId(null);
     } catch (err: any) {
-      setErrorMsg(formatErrorMessage(err, "Failed to update extension state."));
+      setErrorMsg(err.response?.data?.error || "Failed to update extension state.");
     } finally {
       setActionLoading(false);
     }
@@ -220,7 +201,7 @@ export function BlueprintExtensionsManager() {
       setExtConfig(res.data.config || {});
       setConfigModalOpen(true);
     } catch (err: any) {
-      setErrorMsg(formatErrorMessage(err, "Failed to fetch extension configuration."));
+      setErrorMsg(err.response?.data?.error || "Failed to fetch extension configuration.");
     }
   };
 
@@ -237,7 +218,7 @@ export function BlueprintExtensionsManager() {
       setSuccessMsg("Configuration saved successfully.");
       setConfigModalOpen(false);
     } catch (err: any) {
-      setErrorMsg(formatErrorMessage(err, "Failed to save configuration."));
+      setErrorMsg(err.response?.data?.error || "Failed to save configuration.");
     } finally {
       setActionLoading(false);
     }
@@ -255,7 +236,7 @@ export function BlueprintExtensionsManager() {
       setSelectedExt(null);
       await fetchExtensions();
     } catch (err: any) {
-      setErrorMsg(formatErrorMessage(err, "Failed to uninstall extension."));
+      setErrorMsg(err.response?.data?.error || "Failed to uninstall extension.");
     } finally {
       setActionLoading(false);
     }
@@ -268,7 +249,7 @@ export function BlueprintExtensionsManager() {
       const res = await axios.get("/api/admin/blueprint/doctor");
       setDoctorReport(res.data);
     } catch (err: any) {
-      setErrorMsg(formatErrorMessage(err, "Failed to run Blueprint Doctor."));
+      setErrorMsg(err.response?.data?.error || "Failed to run Blueprint Doctor.");
     } finally {
       setDoctorLoading(false);
     }
@@ -304,7 +285,7 @@ export function BlueprintExtensionsManager() {
           >
             <div className="flex items-center gap-2">
               <AlertCircle size={18} />
-              <span>{typeof errorMsg === "string" ? errorMsg : String(errorMsg || "")}</span>
+              <span>{errorMsg}</span>
             </div>
             <button onClick={() => setErrorMsg(null)} className="text-rose-400 hover:text-white">
               <X size={16} />
@@ -601,16 +582,6 @@ export function BlueprintExtensionsManager() {
               </div>
 
               <div className="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-5">
-                {/* Inline modal error message if any */}
-                {errorMsg && (
-                  <div className="p-3.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl text-xs flex items-start gap-2.5 font-mono">
-                    <AlertCircle size={16} className="mt-0.5 flex-shrink-0 text-rose-400" />
-                    <div className="flex-1 leading-relaxed">
-                      {typeof errorMsg === "string" ? errorMsg : String(errorMsg || "")}
-                    </div>
-                  </div>
-                )}
-
                 {installTab === "key" ? (
                   !keyPreview ? (
                     <form onSubmit={handleValidateKey} className="space-y-4">
@@ -623,12 +594,12 @@ export function BlueprintExtensionsManager() {
                             type="text"
                             value={extensionKey}
                             onChange={(e) => setExtensionKey(e.target.value)}
-                            placeholder="e.g. jtg_key_demo_hello or jtg_key_..."
+                            placeholder="e.g. jtg_key_..."
                             className="w-full bg-white/[0.03] border border-line rounded-xl px-4 py-3 text-sm text-foreground placeholder-faint focus:outline-none focus:border-theme-500 transition-colors font-mono"
                           />
                         </div>
                         <p className="text-xs text-muted-foreground mt-2">
-                          Paste the secure installation key generated from the JTG Blueprint Registry (or sample test key <code className="text-theme-400">jtg_key_demo_hello</code>).
+                          Paste the secure installation key generated from the JTG Blueprint Registry.
                         </p>
                       </div>
 
@@ -664,22 +635,18 @@ export function BlueprintExtensionsManager() {
                     <div className="space-y-5">
                       <div className="bg-white/[0.02] border border-border-subtle p-4 rounded-xl space-y-2">
                         <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-foreground text-sm">
-                            {keyPreview.extensionName || keyPreview.name || keyPreview.extensionId || "Extension"}
-                          </h4>
-                          <span className="text-xs font-mono text-theme-400">v{keyPreview.version || "1.0.0"}</span>
+                          <h4 className="font-bold text-foreground text-sm">{keyPreview.extensionName || keyPreview.name}</h4>
+                          <span className="text-xs font-mono text-theme-400">v{keyPreview.version}</span>
                         </div>
-                        <p className="text-xs text-muted-foreground">{keyPreview.description || "No description provided."}</p>
-                        {keyPreview.author && (
-                          <p className="text-[11px] font-mono text-faint">
-                            Developer: {typeof keyPreview.author === "string" ? keyPreview.author : (keyPreview.author?.name || "Unknown")}
-                          </p>
+                        <p className="text-xs text-muted-foreground">{keyPreview.description}</p>
+                        {keyPreview.author?.name && (
+                          <p className="text-[11px] font-mono text-faint">Developer: {keyPreview.author.name}</p>
                         )}
                         {keyPreview.compatibility && (
                           <div className="flex gap-2 text-[11px] font-mono text-dim pt-1">
-                            <span>JTG Panel: {keyPreview.compatibility.jtg_panel || ">=2.0.0"}</span>
+                            <span>JTG Panel: {keyPreview.compatibility.jtg_panel}</span>
                             <span>•</span>
-                            <span>Blueprint: {keyPreview.compatibility.blueprint || ">=1.0.0"}</span>
+                            <span>Blueprint: {keyPreview.compatibility.blueprint}</span>
                           </div>
                         )}
                       </div>
@@ -691,36 +658,28 @@ export function BlueprintExtensionsManager() {
                           Requested Permissions:
                         </h5>
 
-                        {keyPreview.permissionDefinitions && Array.isArray(keyPreview.permissionDefinitions) && keyPreview.permissionDefinitions.length > 0 ? (
-                          <div className="space-y-2 max-h-40 overflow-y-auto custom-scrollbar">
-                            {keyPreview.permissionDefinitions.map((perm: any, idx: number) => {
-                              const isObj = typeof perm === "object" && perm !== null;
-                              const permId = isObj ? (perm.id || `perm_${idx}`) : String(perm);
-                              const permName = isObj ? (perm.name || perm.id) : String(perm);
-                              const permDesc = isObj ? perm.description : "";
-                              const permRisk = isObj ? perm.risk : "standard";
-
-                              return (
-                                <div
-                                  key={permId}
-                                  className="p-2.5 bg-white/[0.02] border border-border-subtle rounded-lg flex items-start gap-2 text-xs"
-                                >
-                                  <span
-                                    className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
-                                      permRisk === "critical"
-                                        ? "bg-red-500"
-                                        : permRisk === "high"
-                                        ? "bg-amber-500"
-                                        : "bg-emerald-500"
-                                    }`}
-                                  />
-                                  <div>
-                                    <p className="font-semibold text-foreground">{permName}</p>
-                                    {permDesc && <p className="text-[11px] text-muted-foreground">{permDesc}</p>}
-                                  </div>
+                        {keyPreview.permissionDefinitions && keyPreview.permissionDefinitions.length > 0 ? (
+                          <div className="space-y-2 max-h-40 overflow-y-auto">
+                            {keyPreview.permissionDefinitions.map((perm: any) => (
+                              <div
+                                key={perm.id}
+                                className="p-2.5 bg-white/[0.02] border border-border-subtle rounded-lg flex items-start gap-2 text-xs"
+                              >
+                                <span
+                                  className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
+                                    perm.risk === "critical"
+                                      ? "bg-red-500"
+                                      : perm.risk === "high"
+                                      ? "bg-amber-500"
+                                      : "bg-emerald-500"
+                                  }`}
+                                />
+                                <div>
+                                  <p className="font-semibold text-foreground">{perm.name}</p>
+                                  <p className="text-[11px] text-muted-foreground">{perm.description}</p>
                                 </div>
-                              );
-                            })}
+                              </div>
+                            ))}
                           </div>
                         ) : (
                           <p className="text-xs text-muted-foreground italic">No elevated permissions requested.</p>
@@ -738,7 +697,7 @@ export function BlueprintExtensionsManager() {
                         <button
                           onClick={handleInstallConfirmed}
                           disabled={actionLoading}
-                          className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-mono font-medium flex items-center gap-2 transition-colors disabled:opacity-50"
+                          className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-mono font-medium flex items-center gap-2 transition-colors"
                         >
                           {actionLoading ? (
                             <>

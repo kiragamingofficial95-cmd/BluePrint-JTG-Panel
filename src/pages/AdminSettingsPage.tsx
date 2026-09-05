@@ -13,7 +13,6 @@ import { ImageCropper } from "../components/ImageCropper";
 import { LoadingOverlay } from "../components/LoadingOverlay";
 import { initializeApp, deleteApp, getApps } from "firebase/app";
 import { BlueprintExtensionsManager } from "../components/BlueprintExtensionsManager";
-import { ErrorBoundary } from "../components/ErrorBoundary";
 
 
 
@@ -1144,9 +1143,7 @@ export default function AdminSettingsPage(): React.ReactElement {
 
         
 
-                    <ErrorBoundary fallbackTitle="Blueprint Extension Manager Error">
-                      <BlueprintExtensionsManager />
-                    </ErrorBoundary>
+                    <BlueprintExtensionsManager />
 
                     <section id="system" className="scroll-mt-24 bg-card border border-border-subtle rounded-2xl p-6 md:p-8 shadow-xl">
                         <h2 className="text-xl font-bold mb-4 flex items-center text-foreground">

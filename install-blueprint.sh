@@ -76,7 +76,7 @@ if [ ! -f "$STATE_FILE" ]; then
     cat <<EOF > "$STATE_FILE"
 {
   "version": "1.0.0",
-  "registryUrl": "https://blue-print-jtg-panel.vercel.app",
+  "registryUrl": "https://blueprint.jtgpanel.com",
   "extensions": {},
   "configs": {},
   "migrations": {},

@@ -22,7 +22,7 @@ router.get("/info", requireAdmin, async (req: Request, res: Response) => {
     description: "First-class extension ecosystem & runtime for JTG Panel.",
     author: {
       name: "JTG Team & Blueprint Ecosystem",
-      url: "https://blue-print-jtg-panel.vercel.app",
+      url: "https://blueprint.jtgpanel.com",
     },
     stats: {
       totalExtensions: extensions.length,
@@ -48,7 +48,7 @@ router.get("/extensions", requireAdmin, async (req: Request, res: Response) => {
       enabled: true,
       author: {
         name: "JTG Team",
-        url: "https://blue-print-jtg-panel.vercel.app",
+        url: "https://blueprint.jtgpanel.com",
       },
       isCore: true,
     },

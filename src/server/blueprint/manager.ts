@@ -78,10 +78,7 @@ export class BlueprintExtensionManager {
         const raw = fs.readJsonSync(this.stateFilePath);
         return {
           version: BLUEPRINT_VERSION,
-          registryUrl:
-            raw.registryUrl && raw.registryUrl !== "https://blueprint.jtgpanel.com"
-              ? raw.registryUrl
-              : process.env.BLUEPRINT_REGISTRY_URL || "https://blue-print-jtg-panel.vercel.app",
+          registryUrl: raw.registryUrl || process.env.BLUEPRINT_REGISTRY_URL || "https://blueprint.jtgpanel.com",
           extensions: raw.extensions || {},
           configs: raw.configs || {},
           migrations: raw.migrations || {},

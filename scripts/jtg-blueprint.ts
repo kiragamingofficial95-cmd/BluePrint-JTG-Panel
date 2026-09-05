@@ -350,7 +350,7 @@ jtg-blueprint build
         process.exit(1);
       }
       const manifest = await fs.readJson(manifestFile);
-      const registryUrl = process.env.BLUEPRINT_REGISTRY_URL || "https://blue-print-jtg-panel.vercel.app";
+      const registryUrl = process.env.BLUEPRINT_REGISTRY_URL || "https://blueprint.jtgpanel.com";
       console.log(`Publishing '${manifest.name}' v${manifest.version} to ${registryUrl}...`);
       console.log("✓ Manifest validated. Submit package at registry URL or use registry API.");
       break;
