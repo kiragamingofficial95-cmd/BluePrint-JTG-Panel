@@ -29,7 +29,7 @@ export interface KeyValidationResult {
 export class RegistryClient {
   private registryUrl: string;
 
-  constructor(registryUrl = process.env.BLUEPRINT_REGISTRY_URL || "https://blueprint.jtgpanel.com") {
+  constructor(registryUrl = process.env.BLUEPRINT_REGISTRY_URL || "https://blue-print-jtg-panel.vercel.app") {
     this.registryUrl = registryUrl.replace(/\/$/, "");
   }
 
